@@ -159,6 +159,7 @@ subject_numburs<<n
 n=n+1
 }
 
+#subject_numburs=[6]#試験的にコンピュータプログラミングの資料だけダウンロード
 subject_numburs.each do |subject_number|
 
 subject_number=subject_number.to_i
@@ -179,7 +180,7 @@ end
 
 driver.find_element(:xpath,("//a[.='#{subject_name}']")).click
 driver.find_element(:xpath,("//a[.='状況別に表示する']")).click
-#driver.find_element(:xpath,("//a[.='完了']")).click#For only developper
+#driver.find_element(:xpath,("//a[.='完了']")).click#Option to fetch documents from coursepower without 未参照
 tags=[]
 target_tags=[]
 delete_tags=[]
@@ -206,6 +207,7 @@ if links_to_next.empty?
   next#状況別表示のリンクが空であればsubject_numbersの数字を一つ進めたい。
 else
 
+ links_to_next=["course presentation"]#試験的に第一回の資料だけダウンロード
  links_to_next.each do |link_to_next|
  driver.find_element(:xpath,("//a[.='#{link_to_next}']")).click
 #ダウンロード画面
@@ -237,8 +239,10 @@ else
      #ダウンロード先ファイルの作成
      path_dir_download_now="#{path_dir}/download_now"
      #ダウンロードボタンクリック
-     driver.find_element(:xpath,("//a[.='#{link_to_download}']")).click
 
+
+     driver.find_element(:xpath,("//a[.='#{link_to_download}']")).click
+     
 #名前重複回避プロセス
 require 'fileutils'
 #ファイルが一つ増えていることを確認
@@ -304,7 +308,7 @@ Dir.glob("#{File.expand_path(path_dir)}/*").each do |file|
       puts"No same name files was found"
       #単にファイルの移動だけ
       File.rename("#{path_dir_download_now}/#{file_inside_download_now}","#{path_dir}/#{file_inside_download_now}")
-   end
+   end#if dir_designated.include?(file_inside_download_now)のend
 #フォルダを削除する
      Dir.rmdir("#{path_dir_download_now}")
 #名前重複回避プロセス終了
@@ -314,10 +318,12 @@ Dir.glob("#{File.expand_path(path_dir)}/*").each do |file|
      names_of_files_downloaded<<name_of_file_download
     end
     driver.navigate.back#ダウンロードをすべて終えたら一つ前に戻る（状況別表示へ）
+
+
  end
  puts ("All documents are downloaded from #{subject_name}.")
  driver.navigate.back
- #driver.navigate.back#devolopper only
+ #driver.navigate.back#Option to fetch documents from coursepower without 未参照
  driver.navigate.back
  #状況別表示がすべて参照済みになったら講義一覧に戻る。
 end
